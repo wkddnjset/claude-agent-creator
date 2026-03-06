@@ -1,0 +1,23 @@
+{
+  "name": "anygent-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that helps non-developers build Claude sub-agents for their workflows",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "anygent": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
