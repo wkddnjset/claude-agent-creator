@@ -330,7 +330,7 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-glow"></div>
-  <div class="hero-badge">MCP for Claude Code · v0.2.0</div>
+  <div class="hero-badge">CLI + MCP for Claude Code · v0.2.0</div>
   <h1>
     코딩 없이<br />
     <span class="gradient">나만의 Claude 에이전트</span>를<br />
@@ -344,7 +344,7 @@
   <div class="install-strip">
     <div class="code-block">
       <span class="dollar">$</span>
-      <span class="cmd">npx anygent-mcp</span>
+      <span class="cmd">npx anygent install marketer</span>
       <button class="copy-btn" onclick="copyInstall(this)" title="복사">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
       </button>
@@ -489,26 +489,23 @@
     <p class="section-sub">npm 하나로 끝. Claude Code에 설정 한 줄 추가하면 바로 사용할 수 있습니다.</p>
     <div class="install-grid">
       <div class="install-card">
-        <h3>① 설치</h3>
+        <h3>① 글로벌 설치 (한번만)</h3>
         <div class="code-snippet">
-          <span class="comment"># npm으로 설치</span><br />
-          <span class="keyword">npm</span> install anygent-mcp<br /><br />
-          <span class="comment"># 또는 바로 실행</span><br />
-          <span class="keyword">npx</span> anygent-mcp
+          <span class="comment"># 전역 설치</span><br />
+          <span class="keyword">npm</span> install -g anygent<br /><br />
+          <span class="comment"># 또는 npx로 바로 실행</span><br />
+          <span class="keyword">npx</span> anygent list
         </div>
       </div>
       <div class="install-card">
-        <h3>② Claude Code 설정</h3>
+        <h3>② 에이전트 설치</h3>
         <div class="code-snippet">
-          <span class="comment">// ~/.claude/settings.json</span><br />
-          {<br />
-          &nbsp;&nbsp;<span class="prop">"mcpServers"</span>: {<br />
-          &nbsp;&nbsp;&nbsp;&nbsp;<span class="prop">"anygent"</span>: {<br />
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop">"command"</span>: <span class="string">"npx"</span>,<br />
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop">"args"</span>: [<span class="string">"anygent-mcp"</span>]<br />
-          &nbsp;&nbsp;&nbsp;&nbsp;}<br />
-          &nbsp;&nbsp;}<br />
-          }
+          <span class="comment"># 템플릿 목록 보기</span><br />
+          <span class="keyword">anygent</span> list<br /><br />
+          <span class="comment"># 마케터 에이전트 설치</span><br />
+          <span class="keyword">anygent</span> install <span class="string">marketer</span><br /><br />
+          <span class="comment"># 커스텀 에이전트 만들기</span><br />
+          <span class="keyword">anygent</span> create
         </div>
       </div>
     </div>
@@ -534,7 +531,7 @@
 
 <script>
   function copyInstall(btn) {
-    navigator.clipboard.writeText('npx anygent-mcp').then(() => {
+    navigator.clipboard.writeText('npx anygent install marketer').then(() => {
       btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
       btn.style.color = '#4ade80';
       setTimeout(() => {
