@@ -1,0 +1,27 @@
+name: anygent-mcp
+description: >
+  Build your own Claude agent without coding.
+  코딩 없이 나만의 Claude 에이전트를 만드세요.
+  Through a simple interview process, it automatically generates a CLAUDE.md configuration file tailored to your workflow.
+
+tags:
+  - agent
+  - claude
+  - workflow
+  - automation
+  - productivity
+  - no-code
+
+license: MIT
+homepage: https://anygent.ngrok.app
+repository: https://github.com/wkddnjset/claude-agent-creator
+
+build:
+  dockerfile: packages/mcp/Dockerfile
+
+startCommand:
+  type: stdio
+  command: npx
+  args:
+    - -y
+    - anygent-mcp

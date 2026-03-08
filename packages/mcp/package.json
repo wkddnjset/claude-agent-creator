@@ -1,17 +1,36 @@
 {
   "name": "anygent-mcp",
   "version": "0.1.0",
-  "description": "MCP server that helps non-developers build Claude sub-agents for their workflows",
+  "description": "Build your own Claude agent without coding. MCP server that creates custom CLAUDE.md via simple interview.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "anygent": "dist/index.js"
+    "anygent-mcp": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js"
   },
+  "keywords": [
+    "mcp",
+    "claude",
+    "agent",
+    "ai",
+    "workflow",
+    "automation",
+    "claude-code"
+  ],
+  "author": "wkddnjset",
+  "license": "MIT",
+  "homepage": "https://anygent.ngrok.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wkddnjset/claude-agent-creator"
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
