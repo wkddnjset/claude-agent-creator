@@ -1,0 +1,36 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "anygent-marketplace",
+  "version": "0.1.0",
+  "description": "Anygent - Build your own Claude agent without coding",
+  "owner": {
+    "name": "TOKTOKHAN.DEV",
+    "url": "https://github.com/wkddnjset"
+  },
+  "plugins": [
+    {
+      "name": "anygent",
+      "description": "Build your own Claude agent without coding. Create a custom CLAUDE.md via simple 4-step interview (Plan → Research → Do → Check) or apply ready-made templates for marketer, PM, researcher, sales, and more.",
+      "version": "0.1.0",
+      "author": {
+        "name": "TOKTOKHAN.DEV",
+        "url": "https://github.com/wkddnjset"
+      },
+      "repository": "https://github.com/wkddnjset/claude-agent-creator",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/wkddnjset/claude-agent-creator.git"
+      },
+      "category": "productivity",
+      "keywords": [
+        "agent",
+        "claude",
+        "workflow",
+        "automation",
+        "no-code",
+        "template",
+        "CLAUDE.md"
+      ]
+    }
+  ]
+}

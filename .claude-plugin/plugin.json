@@ -1,0 +1,20 @@
+{
+  "name": "anygent",
+  "version": "0.1.0",
+  "description": "Build your own Claude agent without coding. Create custom CLAUDE.md via simple interview or choose from templates.",
+  "author": {
+    "name": "TOKTOKHAN.DEV",
+    "url": "https://github.com/wkddnjset"
+  },
+  "repository": "https://github.com/wkddnjset/claude-agent-creator",
+  "license": "MIT",
+  "keywords": [
+    "agent",
+    "claude",
+    "workflow",
+    "automation",
+    "no-code",
+    "template",
+    "CLAUDE.md"
+  ]
+}
