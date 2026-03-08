@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anygent — 나만의 Claude 에이전트 만들기</title>
+  <meta name="description" content="코딩 없이 나만의 Claude AI 에이전트를 만드세요. 간단한 인터뷰만으로 업무 자동화가 시작됩니다." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg2: #111118;
+      --bg3: #1a1a26;
+      --border: rgba(255,255,255,0.08);
+      --accent: #7c6ff7;
+      --accent2: #a78bfa;
+      --accent-glow: rgba(124,111,247,0.3);
+      --text: #f1f0ff;
+      --text2: #9b99b8;
+      --text3: #6b69a0;
+      --green: #4ade80;
+      --pink: #f472b6;
+      --cyan: #22d3ee;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      backdrop-filter: blur(20px);
+      background: rgba(10,10,15,0.8);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-weight: 700; font-size: 1.15rem; color: var(--text);
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent2); }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+      color: var(--text2); font-size: 0.9rem; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--accent);
+      color: #fff !important;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: opacity 0.2s !important;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 80px 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute;
+      width: 800px; height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,111,247,0.15) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(124,111,247,0.15);
+      border: 1px solid rgba(124,111,247,0.3);
+      border-radius: 100px;
+      padding: 0.35rem 1rem;
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--accent2);
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--accent2) 0%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.15rem; color: var(--text2); max-width: 560px;
+      line-height: 1.7; margin-bottom: 2.5rem;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 600; font-size: 0.95rem;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 30px var(--accent-glow); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text2);
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 500; font-size: 0.95rem;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent2); color: var(--text); }
+
+    /* ─── INSTALL SNIPPET ─── */
+    .install-strip {
+      margin-top: 3rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .code-block {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 1.2rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: var(--text2);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .code-block .dollar { color: var(--accent2); }
+    .code-block .cmd { color: var(--text); }
+    .copy-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--text3); padding: 0.2rem;
+      transition: color 0.2s;
+    }
+    .copy-btn:hover { color: var(--text); }
+
+    /* ─── SECTION ─── */
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent2);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .section-sub { color: var(--text2); font-size: 1.05rem; max-width: 500px; line-height: 1.7; }
+
+    /* ─── HOW IT WORKS ─── */
+    #how { background: var(--bg2); }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .step {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .step:hover { border-color: rgba(124,111,247,0.4); transform: translateY(-4px); }
+    .step-num {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: var(--accent2);
+      background: rgba(124,111,247,0.12);
+      border-radius: 100px;
+      padding: 0.2rem 0.6rem;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    .step h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .step p { font-size: 0.875rem; color: var(--text2); line-height: 1.6; }
+    .step-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+
+    /* ─── TEMPLATES ─── */
+    .templates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+    .template-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: default;
+    }
+    .template-card:hover { border-color: rgba(124,111,247,0.35); background: var(--bg3); }
+    .template-emoji { font-size: 1.75rem; flex-shrink: 0; }
+    .template-info h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .template-info p { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+    .template-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+    .tag {
+      font-size: 0.7rem; font-weight: 500;
+      background: rgba(124,111,247,0.12);
+      color: var(--accent2);
+      border-radius: 100px;
+      padding: 0.15rem 0.5rem;
+    }
+
+    /* ─── TOOLS ─── */
+    #tools { background: var(--bg2); }
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+    .tool-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex; gap: 1rem; align-items: center;
+    }
+    .tool-name {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.82rem;
+      color: var(--cyan);
+      background: rgba(34,211,238,0.08);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .tool-desc { font-size: 0.875rem; color: var(--text2); }
+
+    /* ─── INSTALL SECTION ─── */
+    .install-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+    @media (max-width: 700px) { .install-grid { grid-template-columns: 1fr; } }
+    .install-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+    .install-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 1.25rem; color: var(--text); }
+    .code-snippet {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+    .code-snippet .comment { color: var(--text3); }
+    .code-snippet .keyword { color: var(--accent2); }
+    .code-snippet .string { color: var(--green); }
+    .code-snippet .prop { color: var(--cyan); }
+
+    /* ─── CTA ─── */
+    #cta {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(124,111,247,0.1) 0%, rgba(34,211,238,0.05) 100%);
+      border-top: 1px solid var(--border);
+    }
+    #cta h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 1rem; }
+    #cta p { color: var(--text2); max-width: 480px; margin: 0 auto 2rem; line-height: 1.7; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--text3);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--text3); text-decoration: none; }
+    footer a:hover { color: var(--text2); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .hero h1 { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">any<span>gent</span></a>
+  <div class="nav-links">
+    <a href="#how">사용방법</a>
+    <a href="#templates">템플릿</a>
+    <a href="#tools">MCP 도구</a>
+    <a href="#install">설치하기</a>
+    <a href="https://github.com/wkddnjset/claude-agent-creator" target="_blank" rel="noopener" class="nav-cta">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">MCP for Claude Code · v0.2.0</div>
+  <h1>
+    코딩 없이<br />
+    <span class="gradient">나만의 Claude 에이전트</span>를<br />
+    만드세요
+  </h1>
+  <p>Anygent MCP는 간단한 인터뷰 과정을 통해 당신의 업무에 딱 맞는 AI 에이전트를 자동으로 설계해줍니다. 마케터, PM, 개발자 — 누구든 가능합니다.</p>
+  <div class="hero-btns">
+    <a href="#install" class="btn-primary">지금 시작하기 →</a>
+    <a href="https://github.com/wkddnjset/claude-agent-creator" target="_blank" rel="noopener" class="btn-secondary">GitHub 보기</a>
+  </div>
+  <div class="install-strip">
+    <div class="code-block">
+      <span class="dollar">$</span>
+      <span class="cmd">npx anygent-mcp</span>
+      <button class="copy-btn" onclick="copyInstall(this)" title="복사">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">4단계로 완성되는<br />나만의 에이전트</h2>
+    <p class="section-sub">Plan → Research → Do → Check. 각 단계마다 Claude가 직접 물어보고, 검증하며 완성합니다.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon">🗺️</div>
+        <div class="step-num">01 · plan</div>
+        <h3>기획</h3>
+        <p>에이전트의 목적, 대상, 도구, 금지사항을 인터뷰 형식으로 파악합니다.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">🔍</div>
+        <div class="step-num">02 · research</div>
+        <h3>리서치</h3>
+        <p>유사 에이전트와 모범 사례를 조사해 최적의 설계를 도출합니다.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">⚙️</div>
+        <div class="step-num">03 · do</div>
+        <h3>생성</h3>
+        <p>수집한 정보로 CLAUDE.md 설정 파일을 자동으로 작성합니다.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">✅</div>
+        <div class="step-num">04 · check</div>
+        <h3>검수</h3>
+        <p>샘플 3개를 실제 에이전트로 실행해 품질을 검증합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEMPLATES -->
+<section id="templates">
+  <div class="container">
+    <div class="section-label">Templates</div>
+    <h2 class="section-title">바로 쓸 수 있는<br />직무별 템플릿</h2>
+    <p class="section-sub">처음부터 만들기 부담스럽다면 템플릿을 골라 커스터마이징하세요.</p>
+    <div class="templates-grid">
+      <div class="template-card">
+        <div class="template-emoji">📱</div>
+        <div class="template-info">
+          <h4>디지털 마케터</h4>
+          <p>SNS 콘텐츠, 광고 카피, 트렌드 분석</p>
+          <div class="template-tags"><span class="tag">마케팅</span><span class="tag">SNS</span><span class="tag">광고</span></div>
+        </div>
+      </div>
+      <div class="template-card">
+        <div class="template-emoji">🎬</div>
+        <div class="template-info">
+          <h4>콘텐츠 크리에이터</h4>
+          <p>스크립트 작성, 썸네일 아이디어, 댓글 답변</p>
+          <div class="template-tags"><span class="tag">유튜브</span><span class="tag">크리에이터</span></div>
+        </div>
+      </div>
+      <div class="template-card">
+        <div class="template-emoji">📋</div>
+        <div class="template-info">
+          <h4>프로덕트 매니저</h4>
+          <p>PRD 작성, 스프린트 계획, 회의록</p>
+          <div class="template-tags"><span class="tag">PM</span><span class="tag">기획</span><span class="tag">PRD</span></div>
+        </div>
+      </div>
+      <div class="template-card">
+        <div class="template-emoji">🔬</div>
+        <div class="template-info">
+          <h4>리서처</h4>
+          <p>자료 조사, 요약, 인사이트 도출</p>
+          <div class="template-tags"><span class="tag">리서치</span><span class="tag">분석</span></div>
+        </div>
+      </div>
+      <div class="template-card">
+        <div class="template-emoji">💼</div>
+        <div class="template-info">
+          <h4>영업 담당자</h4>
+          <p>제안서, 이메일, 고객 관리</p>
+          <div class="template-tags"><span class="tag">영업</span><span class="tag">제안서</span></div>
+        </div>
+      </div>
+      <div class="template-card">
+        <div class="template-emoji">🎧</div>
+        <div class="template-info">
+          <h4>고객 지원</h4>
+          <p>FAQ, 답변 초안, 케이스 분류</p>
+          <div class="template-tags"><span class="tag">CS</span><span class="tag">FAQ</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools">
+  <div class="container">
+    <div class="section-label">MCP Tools</div>
+    <h2 class="section-title">Claude Code에서<br />바로 사용하는 도구들</h2>
+    <p class="section-sub">Anygent는 6개의 MCP 도구로 구성되어 있습니다. 순서대로 실행하면 에이전트가 완성됩니다.</p>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <span class="tool-name">anygent_plan</span>
+        <span class="tool-desc">워크플로우 인터뷰 시작 및 기획</span>
+      </div>
+      <div class="tool-card">
+        <span class="tool-name">anygent_research</span>
+        <span class="tool-desc">유사 에이전트 리서치 및 레퍼런스 수집</span>
+      </div>
+      <div class="tool-card">
+        <span class="tool-name">anygent_do</span>
+        <span class="tool-desc">CLAUDE.md 설정 파일 자동 생성</span>
+      </div>
+      <div class="tool-card">
+        <span class="tool-name">anygent_check</span>
+        <span class="tool-desc">샘플 실행으로 품질 검증</span>
+      </div>
+      <div class="tool-card">
+        <span class="tool-name">list_templates</span>
+        <span class="tool-desc">사용 가능한 템플릿 목록 조회</span>
+      </div>
+      <div class="tool-card">
+        <span class="tool-name">apply_template</span>
+        <span class="tool-desc">템플릿 선택 및 커스터마이징</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section id="install">
+  <div class="container">
+    <div class="section-label">Installation</div>
+    <h2 class="section-title">2분 만에 설치</h2>
+    <p class="section-sub">npm 하나로 끝. Claude Code에 설정 한 줄 추가하면 바로 사용할 수 있습니다.</p>
+    <div class="install-grid">
+      <div class="install-card">
+        <h3>① 설치</h3>
+        <div class="code-snippet">
+          <span class="comment"># npm으로 설치</span><br />
+          <span class="keyword">npm</span> install anygent-mcp<br /><br />
+          <span class="comment"># 또는 바로 실행</span><br />
+          <span class="keyword">npx</span> anygent-mcp
+        </div>
+      </div>
+      <div class="install-card">
+        <h3>② Claude Code 설정</h3>
+        <div class="code-snippet">
+          <span class="comment">// ~/.claude/settings.json</span><br />
+          {<br />
+          &nbsp;&nbsp;<span class="prop">"mcpServers"</span>: {<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="prop">"anygent"</span>: {<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop">"command"</span>: <span class="string">"npx"</span>,<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop">"args"</span>: [<span class="string">"anygent-mcp"</span>]<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+          &nbsp;&nbsp;}<br />
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <h2>지금 나만의 에이전트를<br />만들어보세요</h2>
+    <p>코딩 경험이 없어도 괜찮아요. 질문에 답하는 것만으로 충분합니다.</p>
+    <div class="hero-btns">
+      <a href="https://github.com/wkddnjset/claude-agent-creator" target="_blank" rel="noopener" class="btn-primary">GitHub에서 시작하기 →</a>
+      <a href="#how" class="btn-secondary">자세히 보기</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Made with ❤️ by <a href="https://github.com/wkddnjset" target="_blank" rel="noopener">wkddnjset</a> · MIT License · <a href="https://github.com/wkddnjset/claude-agent-creator" target="_blank" rel="noopener">GitHub</a></p>
+</footer>
+
+<script>
+  function copyInstall(btn) {
+    navigator.clipboard.writeText('npx anygent-mcp').then(() => {
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+      btn.style.color = '#4ade80';
+      setTimeout(() => {
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+        btn.style.color = '';
+      }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
